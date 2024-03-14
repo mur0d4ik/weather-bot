@@ -8,4 +8,8 @@ db = DataBase()
 
 @router.callback_query()
 async def lang(call: CallbackQuery):
-    await call.message.answer(f"{words[call.data]['start']} @{call.message.from_user.username}!")
+    user_in_base = db.select_user(call.message.chat.id)
+    
+    if user_in_base is None and call.data in words[call.data]:
+        await call.message.answer(f"{words[call.data]['start']} @{call.message.chat.username}!")
+        db.add_user(call.message.chat.id, call.data)

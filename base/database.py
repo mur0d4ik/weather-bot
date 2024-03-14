@@ -11,13 +11,11 @@ class DataBase():
         self.db.commit()
 
     def select_user(self, id: int) -> bool:
-        self.cursor.execute(f"""SELECT {id} FROM users""")
-        self.cursor.fetchone()
+        self.cursor.execute(f"""SELECT * FROM users WHERE id = {id}""")
+        user = self.cursor.fetchone()
+        
+        return user
 
     def add_user(self, id: int, lang: str) -> None:
-
-        user = self.select_user(id)
-
-        if user is None:
-            self.cursor.execute(f"""INSERT INTO users VALUES({id}, "{lang}")""")
-            self.db.commit()
+        self.cursor.execute(f"""INSERT INTO users VALUES({id}, "{lang}")""")
+        self.db.commit()
