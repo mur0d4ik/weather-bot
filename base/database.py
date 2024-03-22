@@ -10,12 +10,27 @@ class DataBase():
         self.cursor.execute("""CREATE TABLE IF NOT EXISTS users(id int, lang str)""")
         self.db.commit()
 
-    def select_user(self, id: int) -> bool:
+    def select_user(self, id: int):
         self.cursor.execute(f"""SELECT * FROM users WHERE id = {id}""")
         user = self.cursor.fetchone()
         
         return user
 
     def add_user(self, id: int, lang: str) -> None:
-        self.cursor.execute(f"""INSERT INTO users VALUES({id}, "{lang}")""")
+        
+        user = self.select_user(id)
+        
+        if user is None:
+            self.cursor.execute(f"""INSERT INTO users VALUES({id}, "{lang}")""")
+            self.db.commit()
+        
+    def update_lang(self, id: int, lang: str) -> bool:
+        self.cursor.execute("""UPDATE users SET lang = '{}' WHERE id = {}""".format(lang, id))
         self.db.commit()
+        
+        status = self.select_user(id)
+        
+        if status[-1] == lang:
+            return True
+        
+        return False
