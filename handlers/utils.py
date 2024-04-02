@@ -5,7 +5,10 @@ words = {
     'lang': 'Change language',
     'changed_lang': 'Changed',
     'changed_lang_eror': 'Oops, something went wrong!',
-    'search': "Send an emoji with your country's flag or\nexample code for your language"
+    'search': "Send an emoji with your country's flag or\nexample code for your language",
+    'weather': 'Choose one of the options',
+    'clockwise': 'Select time',
+    'clockwise_state': 'Send location or city name',
 }
 
 country_list = [
@@ -133,4 +136,3 @@ def search_lang(id: int, lang: str):
             return words['changed_lang_eror']
         
     return words['changed_lang_eror']
-    
