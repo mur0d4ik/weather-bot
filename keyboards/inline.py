@@ -1,5 +1,8 @@
+import datetime
+
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from handlers.utils import *
+from calendar import Calendar
 
 from base.database import DataBase
 
@@ -30,17 +33,21 @@ def weatehrsKeyboard(user_id: int):
 
     builder = InlineKeyboardBuilder()
 
+    global function_dict
     function_dict = {
         'en': {
-            'now': 'Current weather ⏰'
+            'now': 'Current weather ⏰',
+            'forecast': 'Weather forecast 📊'
         },
 
         'ru': {
-            'now': 'Текущую погоду ⏰'
+            'now': 'Текущую погоду ⏰',
+            'forecast': 'Прогноз погоды 📊'
         },
 
         'uz': {
-            'now': 'Hozirgi ob-havoni ⏰'
+            'now': 'Hozirgi ob-havoni ⏰',
+            'forecast': 'Ob-havo bashorati 📊'
         }
     }
 
@@ -50,3 +57,35 @@ def weatehrsKeyboard(user_id: int):
         builder.button(text=value, callback_data=key)
     
     return builder
+
+def daysKeyboard():
+    builder = InlineKeyboardBuilder()
+
+    days = Calendar().itermonthdates(datetime.datetime.now().year, datetime.datetime.now().month)
+
+    date = int(datetime.datetime.now().day)
+
+    days_list = []
+
+    [days_list.append(week.day) for week in days]
+
+    for i in days_list[days_list.index(date): days_list.index(date) + 3]:
+        builder.button(text=str(i), callback_data=str(i))
+
+    builder.adjust(1)
+
+    return builder
+
+def repeatKeyboard(keys: str, lang: str):
+    builder = InlineKeyboardBuilder()
+
+    repeat_buttons = {
+        'ru': '🔄 Повторить ещё раз!',
+        'en': '🔄 Repeat again!',
+        'uz': '🔄 Yana takrorlang!'
+    }
+
+    [builder.button(text = repeat_buttons[lang], callback_data = keys)]
+
+    return builder
+

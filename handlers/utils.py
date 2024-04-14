@@ -6,7 +6,8 @@ words: dict[str: dict] = {
         'weather': '⛅️ To find out the weather use the /weather command',
         'weather-cmd': 'What do you want to know? 🧐',
         'weather-state': '📍 Write the name of your city or send a geolocation!',
-        'location-eror-text': '⚠️ Send the name of the city or geolocation!'
+        'location-eror-text': '⚠️ Send the name of the city or geolocation!',
+        'weather-state-day': 'Select one of the days for the weather forecast!'
     },
 
     'ru':{
@@ -16,7 +17,8 @@ words: dict[str: dict] = {
         'weather': '⛅️ Для того чтобы узнать погоду используйте команду /weather',
         'weather-cmd': 'Что вы хотите узнать? 🧐',
         'weather-state': '📍 Напишите название вашего города или отправьте геолокацию!',
-        'location-eror-text': '⚠️ Отправьте название города или геолокацию!'
+        'location-eror-text': '⚠️ Отправьте название города или геолокацию!',
+        'weather-state-day': 'Выберите один из дней для прогноза погоды!'
     },
 
     'uz':{
@@ -26,7 +28,8 @@ words: dict[str: dict] = {
         'weather': '⛅️ Ob-havoni bilish uchun /weather buyrug\'idan foydalaning',
         'weather-cmd': 'Nima bilishni hohlaysiz? 🧐',
         'weather-state': '📍 Shaharingiz nomini yozing yoki geolokatsiyani yuboring!',
-        'location-eror-text': '⚠️ Shahar yoki geolokatsiyani yuboring!'
+        'location-eror-text': '⚠️ Shahar yoki geolokatsiyani yuboring!',
+        'weather-state-day': 'Ob-havo prognozi uchun kunlardan birini tanlang!'
     }
 }
 
