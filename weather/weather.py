@@ -4,9 +4,7 @@ import datetime
 
 from dotenv import load_dotenv
 from opencage.geocoder import OpenCageGeocode
-from base.database import DataBase
-from . import utils
-
+from .utils import beautiful_text_current, beautiful_text_forecast
 
 load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), '..', 'config.env'))
 
@@ -16,53 +14,56 @@ class Weather():
         self.api = os.getenv("weatherAPI")
         self.geo_name_api = os.getenv("geo_nameAPI")
 
-    def real_time(self, user_id: int, lang: str, city: str = 'London', location: list[float|float] = []):
-        """
-        Это функция вернет прогноз погоды на текущий момент!
-        """
-        
-        
-        if location == []:
-            response = requests.get(f"http://api.weatherapi.com/v1/current.json?key={self.api}&lang={lang}&q={city}")
+    def current_weather(self, id: int, lang: str, location: list[float]) -> dict[str, str | list[str | int]] | str:
+        url = f"https://api.weatherapi.com/v1/current.json?key={self.api}&lang={lang}&q={location[0]},{location[1]}"
+
+        response = requests.get(url)
+
+        if response.status_code == 200:
+            data = response.json()
+
+            result_date = {
+                'lat_lon': f"{data['location']['lat']} {data['location']['lon']}",
+                'last_updated': data['current']['last_updated'][data['current']['last_updated'].index(' '):],
+                'temp_c': data['current']['temp_c'],
+                'temp_f': data['current']['temp_f'],
+                'condition': data['current']['condition']['text'],
+                'humidity': data['current']['humidity']
+            }
+
+            return beautiful_text_current(id, lang, result_date)
 
         else:
-            city = OpenCageGeocode(self.geo_name_api).reverse_geocode(location[0], location[-1])[0]['formatted']
-            response = requests.get(f"http://api.weatherapi.com/v1/current.json?key={self.api}&lang={lang}&q={location[0]},{location[-1]}")
+            return 'eror-lang'
         
-        if response.status_code != 200:
-            return utils.eror_text[DataBase().select_user(user_id)[-1]]['location-eror']
-        
-        return utils.weather_lang(city,
-        response.json()['current']['last_updated'],
-        response.json()['current']['wind_mph'],
-        response.json()['current']['wind_kph'],
-        response.json()['current']['temp_c'],
-        response.json()['current']['temp_f'],
-        response.json()['current']['condition']['text'],
-        lang)
-        
-    def forecast(self, user_id: int, lang: str, day: str, city: str = 'London', location: list[float|float] = []):
-        if location == []:
-            response = requests.get(f"http://api.weatherapi.com/v1/forecast.json?key={self.api}&lang={lang}&q={city}&days={day}")
+    def forecast_weather(self, day: int, id: int, lang: str, location: list[float]) -> dict[str, str | list[str | int]] | str:
+        url = f"https://api.weatherapi.com/v1/forecast.json?key={self.api}&lang={lang}&q={location[0]},{location[1]}&days=3"
 
-        else:
-            city = OpenCageGeocode(self.geo_name_api).reverse_geocode(location[0], location[-1])[0]['formatted']
-            response = requests.get(f"http://api.weatherapi.com/v1/forecast.json?key={self.api}&lang={lang}&q={location[0]},{location[-1]}&days={day}")
+        response = requests.get(url)
 
-        if response.status_code != 200:
-            return utils.eror_text[DataBase().select_user(user_id)[-1]]['location-eror']
-        
-        for i in response.json()['forecast']['forecastday']:
-            if i['date'][-2:] == day and i['date'][-5: -3].replace('0', '') == str(datetime.datetime.now().month):
-                
-                return utils.weather_forecast(city,
-                i['date'],
-                i['day']['maxwind_mph'],
-                i['day']['maxwind_kph'],
-                i['day']['mintemp_c'],
-                i['day']['maxtemp_c'],
-                i['day']['mintemp_f'],
-                i['day']['maxtemp_c'],
-                i['day']['condition']['text'],
-                lang)
+        result_date = {}
+
+        if response.status_code == 200:
+            data = response.json()
+
+            for i in data['forecast']['forecastday']:
+                if day == int(i['date'][-2:]):
+                    result_date = {
+                        'lat_lon': f"{data['location']['lat']},{data['location']['lon']}| {data['location']['tz_id']}",
+                        'sunrise': f"{data['forecast']['forecastday'][1]['astro']['sunrise']}",
+                        'sunset': f"{data['forecast']['forecastday'][1]['astro']['sunset']}",
+                        'moonrise': f"{data['forecast']['forecastday'][1]['astro']['moonrise']}",
+                        'moonset': f"{data['forecast']['forecastday'][1]['astro']['moonset']}",
+                        ####################
+                        'max_min_temp_c': f"{data['forecast']['forecastday'][0]['day']['mintemp_c']} - {data['forecast']['forecastday'][0]['day']['maxtemp_c']}",
+                        'max_min_temp_f': f"{data['forecast']['forecastday'][0]['day']['mintemp_f']} - {data['forecast']['forecastday'][0]['day']['maxtemp_f']}",
+                        'condition': f"{data['forecast']['forecastday'][0]['day']['condition']['text']}",
+                        'humidity': f"{data['current']['humidity']}",
+                        'wind_kph': f"{data['current']['wind_kph']}",
+                        'wind_mph': f"{data['current']['wind_mph']}"
+                    }
                     
+                    return beautiful_text_forecast(id, lang, result_date)
+
+        else:
+            return 'eror-lang'

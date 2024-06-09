@@ -1,117 +1,148 @@
+from base.database import UserSettings
 
+def beautiful_text_current(id: int, lang:str, data: dict[str|list]):
+    words_langs = {
+        'ru': {
+            'lat_lon': f'Широта и долгота: ',
+            'last_updated': f'Время последного обновление данных: ',
+            'temp_c': f'Температура в °C | ',
+            'temp_f': f'Температура в °F | ',
+            'condition': f'Погода: ',
+            'humidity': 'Влажность: '
+        },
 
-def weather_lang(location: str, last_update: str, wind_mph: int|float, wind_kph: int|float, temperature_c: int|float, temperature_f: int|float, day_text: str, lang: str):
+        'en': {
+            'lat_lon': f'Latitude and longitude: ',
+            'last_updated': f'Time of last data update: ',
+            'temp_c': f'Temperature in °C | ',
+            'temp_f': f'Temperature in °F | ',
+            'condition': f'Weather: ',
+            'humidity': 'Humidity: '
+        },
 
-    langs = {
-        'ru': f"""Ваше местоположения: <tg-spoiler>{location}</tg-spoiler>
+        'uz': {
+            'lat_lon': f'Kenglik va uzunlik: ',
+            'last_updated': f'Ma\'lumotlarning oxirgi yangilanish vaqti: ',
+            'temp_c': f'Harorat °C | ',
+            'temp_f': f'Harorat °F | ',
+            'condition': f'Ob-havo: ',
+            'humidity': 'Namlik: '
+        },
 
-⏰  Последнее обновление: {last_update}
+        'ar': {
+            'lat_lon': f'خطوط الطول والعرض: ',
+            'last_updated': f'وقت آخر تحديث للبيانات: ',
+            'temp_c': f'درجة الحرارة في °C | ',
+            'temp_f': f'درجة الحرارة في °F | ',
+            'condition': f'طقس: ',
+            'humidity': 'رطوبة: '
+        },
 
-🌡
-Текущая температура в градусах цельсия: {temperature_c}°C
-Текущая температура в градусах фаренгейта: {temperature_f}°F
-
-⛅️  Погодное условия: {day_text}
-
-💨
-Скорость ветра в миль/час: {wind_mph}
-Скорость ветра в км/час: {wind_kph}
-""",
-        'en': f"""Your location: <tg-spoiler>{location}</tg-spoiler>
-
-⏰  Last update: {last_update}
-
-🌡
-Current temperature in degrees Celsius: {temperature_c}°C
-Current temperature in degrees Fahrenheit: {temperature_f}°F
-
-⛅️  Weather conditions: {day_text}
-
-💨
-Wind speed in mph: {wind_mph}
-Wind speed in km/h: {wind_kph}
-""",
-
-        'uz': f"""Joylashuvingiz: <tg-spoiler>{location}</tg-spoiler>
-
-⏰  Oxirgi yangilanish: {last_update}
-
-🌡
-Tselsiy bo'yicha joriy harorat: {temperature_c}°C
-Joriy harorat Farengeyt darajasida: {temperature_f}°F
-
-⛅️  Ob-havo sharoiti: {day_text}
-
-💨
-Shamol tezligi mil/soat: {wind_mph}
-Shamol tezligi km/soat: {wind_kph}
-"""
+        'uk': {
+            'lat_lon': f'Широта і довгота: ',
+            'last_updated': f'Час останнього оновлення даних: ',
+            'temp_c': f'Температура в °C | ',
+            'temp_f': f'Температура в °F | ',
+            'condition': f'Погода: ',
+            'humidity': 'Вологість: '
+        }
     }
 
+    params = ['lat_lon', 'last_updated', 'temp_c', 'temp_f', 'condition', 'humidity']
+    
+    result_text = ''
+    
+    user_data = UserSettings().search_user(id)[1:]
 
-    return langs[lang]
+    for i in range(len(user_data)):
+        if user_data[i] != '❌':
+            result_text += f"{words_langs[lang][params[i]]}{data[params[i]]}\n\n"
 
-def weather_forecast(location: str, date: str, max_wind_mph: int|float, max_wind_kph: int|float, min_temperature_c: int|float, max_temperature_c: int|float, min_temperature_f: int|float, max_temperature_f: int|float, day_text: str, lang: str):
-    langs = {
-        'ru': f"""Ваше местоположения: <tg-spoiler>{location}</tg-spoiler>
+    return result_text
 
-🗓  {date}
 
-🌡
-Температура в градусах цельсия: {min_temperature_c} - {max_temperature_c}°C
-Температура в градусах фаренгейта: {min_temperature_f} - {max_temperature_f}°F
 
-⛅️  Погодное условия: {day_text}
+def beautiful_text_forecast(id: int, lang:str, data: dict[str|list]):
+    words_langs = {
+        'ru': {
+            'lat_lon': 'Широта и долгота: ',
+            'sunrise': 'Восход: ',
+            'sunset': 'Закат: ',
+            'moonrise': 'Восход луны: ',
+            'moonset': 'Закат луны: ',
+            'max_min_temp_c': 'МАКС-МИН температура в °C | ',
+            'max_min_temp_f': 'МАКС-МИН температура в °F | ',
+            'condition': 'Cостояние: ',
+            'humidity': 'Влажность: ',
+            'wind_kph': 'Ветер км/ч: ',
+            'wind_mph': 'Ветер миль/ч: '
+        },
 
-💨
-Скорость ветра в миль/час: {max_wind_mph} 
-Скорость ветра в км/час: {max_wind_kph}
-""",
+        'en': {
+            'lat_lon': 'Latitude and longitude: ',
+            'sunrise': 'Sunrise: ',
+            'sunset': 'Sunset: ',
+            'moonrise': 'Moonrise: ',
+            'moonset': 'Moonset: ',
+            'max_min_temp_c': 'MAX-MIN temperature in °C | ',
+            'max_min_temp_f': 'MAX-MIN temperature in °F | ',
+            'condition': 'Condition: ',
+            'humidity': 'Humidity: ',
+            'wind_kph': 'Wind| kph: ',
+            'wind_mph': 'Wind| mph: '
+        },
 
-        'en': f"""Your location: <tg-spoiler>{location}</tg-spoiler>
+        'uz': {
+            'lat_lon': 'Kenglik va uzunlik: ',
+            'sunrise': 'Quyosh chiqishi: ',
+            'sunset': 'Quyosh botishi: ',
+            'moonrise': 'Oy chiqishi: ',
+            'moonset': 'Oy botishi: ',
+            'max_min_temp_c': 'MAX-MIN harorat °C | ',
+            'max_min_temp_f': 'MAX-MIN harorat °F | ',
+            'condition': 'Ob-havo: ',
+            'humidity': 'Namlik: ',
+            'wind_kph': 'Shamol| kph: ',
+            'wind_mph': 'Shamol| mph: '
+        },
 
-🗓  {date}
+        'ar': {
+            'lat_lon': 'خطوط الطول والعرض: ',
+            'sunrise': 'شروق الشمس: ',
+            'sunset': 'غروب: ',
+            'moonrise': 'طلوع القمر: ',
+            'moonset': 'غروب الشمس: ',
+            'max_min_temp_c': 'درجة الحرارة القصوى والدقيقة في °C |',
+            'max_min_temp_f': 'درجة الحرارة القصوى والدقيقة في °F |',
+            'condition': 'حالة: ',
+            'humidity': 'رطوبة: ',
+            'wind_kph': 'الريح| kph:',
+            'wind_mph': 'الريح| mph'
+        },
 
-🌡
-Current temperature in degrees Celsius: {min_temperature_c} - {max_temperature_c}°C
-Current temperature in degrees Fahrenheit: {min_temperature_f} - {max_temperature_f}°F
-
-⛅️  Weather conditions: {day_text}
-
-💨
-Wind speed in mph: {max_wind_mph}
-Wind speed in km/h: {max_wind_kph}
-""",
-        
-        'uz': f"""Joylashuvingiz: <tg-spoiler>{location}</tg-spoiler>
-
-🗓  {date}
-
-🌡
-Tselsiy bo'yicha joriy harorat: {min_temperature_c} - {max_temperature_c}°C
-Joriy harorat Farengeyt darajasida: {min_temperature_f} - {max_temperature_f}°F
-
-⛅️  Ob-havo sharoiti: {day_text}
-
-💨
-Shamol tezligi mil/soat: {max_wind_mph}
-Shamol tezligi km/soat: {max_wind_kph}
-"""
+        'uk': {
+            'lat_lon': 'Широта і довгота: ',
+            'sunrise': 'Схід сонця: ',
+            'sunset': 'Захід сонця: ',
+            'moonrise': 'Cхід місяця',
+            'moonset': 'Захід місяця',
+            'max_min_temp_c': 'MAX-MIN температура в °C |',
+            'max_min_temp_f': 'MAX-MIN температура в °F |',
+            'condition': 'Хвороба: ',
+            'humidity': 'Вологість: ',
+            'wind_kph': 'Вітер| kph: ',
+            'wind_mph': 'Вітер| mph: '
+        }
     }
 
-    return langs[lang]
+    params = ['lat_lon', 'sunrise', 'sunset', 'moonrise', 'moonset', 'max_min_temp_c', 'max_min_temp_f', 'condition', 'humidity', 'wind_kph', 'wind_mph']
+    
+    result_text = ''
+    
+    user_data = UserSettings().search_user(id, 'forecast')[1:]
 
+    for i in range(len(user_data)):
+        if user_data[i] != '❌':
+            result_text += f"{words_langs[lang][params[i]]}{data[params[i]]}\n\n"
 
-eror_text = {
-    'ru': {
-        'location-eror': 'Вы не правильно ввели!'
-    },
-
-    'en': {
-        'location-eror': 'You entered it incorrectly!'
-    },
-
-    'uz': {
-        'location-eror': "Siz uni noto'g'ri kiritdingiz!"
-    }
-}
+    return result_text

@@ -4,11 +4,11 @@ import os
 from aiogram import Bot, Dispatcher
 from dotenv import load_dotenv
 from handlers import handler
-from base.database import DataBase
+from base.database import activate_func
 
 load_dotenv(dotenv_path='config.env')
 
-DataBase().create_table()
+activate_func()
 
 # Запуск бота
 async def main():

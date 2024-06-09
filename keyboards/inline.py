@@ -1,91 +1,141 @@
 import datetime
 
 from aiogram.utils.keyboard import InlineKeyboardBuilder
-from handlers.utils import *
-from calendar import Calendar
+from handlers.utils import langs
 
-from base.database import DataBase
-
-def langsKeyboard(user_id: int):
-    
-    user_in_base = DataBase().select_user(user_id)
-
+def langs_keyboard(lang: str) -> InlineKeyboardBuilder:
+    """
+    lang - язык который выбирал юзер\n
+    """
     builder = InlineKeyboardBuilder()
 
-    if user_in_base is None:  
-        for key, emoji in langs.items():
-            builder.button(text=emoji, callback_data=key)
-
-    else:
-        for key, emoji in langs.items():
-            
-            if key == user_in_base[-1]:
-                continue
-
-            else:
-                builder.button(text=emoji, callback_data=key)
+    [builder.button(text=value, callback_data=key) for key, value in langs.items() if key != lang]
 
     builder.adjust(2)
 
     return builder
 
-def weatehrsKeyboard(user_id: int):
-
+def main_settings_keyboard() -> InlineKeyboardBuilder:
+    
     builder = InlineKeyboardBuilder()
 
-    global function_dict
-    function_dict = {
-        'en': {
-            'now': 'Current weather ⏰',
-            'forecast': 'Weather forecast 📊'
-        },
+    [builder.button(text=key, callback_data=key) for key in ['current_settings', 'forecast_settings']]
 
-        'ru': {
-            'now': 'Текущую погоду ⏰',
-            'forecast': 'Прогноз погоды 📊'
-        },
-
-        'uz': {
-            'now': 'Hozirgi ob-havoni ⏰',
-            'forecast': 'Ob-havo bashorati 📊'
-        }
-    }
-
-    user_in_base = DataBase().select_user(user_id)
-
-    for key, value in function_dict[user_in_base[-1]].items():
-        builder.button(text=value, callback_data=key)
-    
     return builder
 
-def daysKeyboard():
+def settings_keyboard_current() -> InlineKeyboardBuilder:
+    
     builder = InlineKeyboardBuilder()
 
-    days = Calendar().itermonthdates(datetime.datetime.now().year, datetime.datetime.now().month)
+    for key, value in back_a.items():
+        builder.button(text=key, callback_data=value)
 
-    date = int(datetime.datetime.now().day)
+    builder.adjust(2)
 
-    days_list = []
+    return builder
 
-    [days_list.append(week.day) for week in days]
+def settings_keyboard_forecast() -> InlineKeyboardBuilder:
+    
+    builder = InlineKeyboardBuilder()
 
-    for i in days_list[days_list.index(date): days_list.index(date) + 3]:
-        builder.button(text=str(i), callback_data=str(i))
+    for key, value in back_b.items():
+        builder.button(text=key, callback_data=value)
+
+    builder.adjust(2)
+
+    return builder
+
+def switch_keyboard(answer: str) -> InlineKeyboardBuilder:
+
+    builder = InlineKeyboardBuilder()
+
+    builder.button(text=switchs[answer[0]], callback_data=switchs[answer[0]])
+    builder.button(text='<<', callback_data='back_param')
 
     builder.adjust(1)
 
     return builder
 
-def repeatKeyboard(keys: str, lang: str):
+def weather_type(lang: str) -> InlineKeyboardBuilder:
+
     builder = InlineKeyboardBuilder()
 
-    repeat_buttons = {
-        'ru': '🔄 Повторить ещё раз!',
-        'en': '🔄 Repeat again!',
-        'uz': '🔄 Yana takrorlang!'
+    weathers_type = {
+        'ru': {
+            'Сейчас': 'current',
+            'Прогноз': 'forecast'
+        },
+
+        'en': {
+            'Current': 'current',
+            'Forecast': 'forecast'
+        }, 
+
+        'uz': {
+            'Joriy': 'current',
+            'Prognoz': 'forecast'
+        },
+
+        'ar': {
+            'حاضِر': 'current',
+            'تنبؤ بالمناخ': 'forecast'
+        },
+
+        'uk': {
+            'Поточний': 'current',
+            'Прогноз': 'forecast'
+        }
     }
 
-    [builder.button(text = repeat_buttons[lang], callback_data = keys)]
+    [builder.button(text=key, callback_data=value) for key, value in weathers_type[lang].items()]
 
     return builder
 
+def repeat_request() -> InlineKeyboardBuilder:
+
+    builder = InlineKeyboardBuilder()
+
+    builder.button(text='🔄', callback_data='repeat_request_current')
+
+    return builder
+
+
+def days_kb() -> InlineKeyboardBuilder:
+    
+    builder = InlineKeyboardBuilder()
+
+    threeday = [(datetime.date.today() + datetime.timedelta(days=i)).day for i in range(1, 3)]
+
+    [builder.button(text=str(i), callback_data=str(i)) for i in threeday]
+
+    builder.adjust(1)
+
+    return builder
+
+back_a = {
+        'lat - lon': 'lat_lon',
+        'last_updated': 'last_updated',
+        'temp_c': 'temp_c',
+        'temp_f': 'temp_f',
+        'condition': 'condition',
+        'humidity': 'humidity'
+    }
+
+back_b = {
+    'lat - lon': 'lat_lon',
+    'sunrise': 'sunrise',
+    'sunset': 'sunset',
+    'moonrise': 'moonrise',
+    'moonset': 'moonset',
+    'max_min_temp_c': 'max_min_temp_c',
+    'max_min_temp_f': 'max_min_temp_f',
+    'condition': 'condition',
+    'humidity': 'humidity',
+    'wind_kph': 'wind_kph',
+    'wind_mph': 'wind_mph'
+}
+
+switchs = {
+        '✅': '❌',
+        '❌': '✅'
+    }

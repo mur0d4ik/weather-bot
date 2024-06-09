@@ -1,4 +1,8 @@
 from aiogram.fsm.state import StatesGroup, State
 
-class weatherState(StatesGroup):
+class weatherStateCurrent(StatesGroup):
+    location = State()
+
+class weatherStateForecast(StatesGroup):
+    day = State()
     location = State()
